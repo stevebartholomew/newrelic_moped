@@ -1,1 +1,2 @@
-require "newrelic_moped/instrumentation"
+require "newrelic-moped/instrumentation"
+require "newrelic-moped/version"
