@@ -1,12 +1,12 @@
-# Newrelic::Moped
+# New Relic Moped
 
-TODO: Write a gem description
+New Relic instrumentation for Moped / Mongoid 3
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'newrelic-moped'
+    gem 'newrelic_moped'
 
 And then execute:
 
@@ -14,11 +14,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install newrelic-moped
-
-## Usage
-
-TODO: Write usage instructions here
+    $ gem install newrelic_moped
 
 ## Contributing
 
