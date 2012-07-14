@@ -4,17 +4,19 @@ New Relic instrumentation for Moped / Mongoid 3
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Add these line to your application's Gemfile in the following order:
 
+    gem 'rpm_contrib'
     gem 'newrelic_moped'
+    gem 'newrelic_rpm'
 
 And then execute:
 
     $ bundle
 
-Or install it yourself as:
+Update your `config/newrelic.yml` to disable Mongoid instrumentation:
 
-    $ gem install newrelic_moped
+    disable_mongoid: true
 
 ## Contributing
 
