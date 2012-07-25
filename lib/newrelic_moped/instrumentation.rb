@@ -12,14 +12,17 @@ DependencyDetection.defer do
   executes do
     Moped::Node.class_eval do
       def process_with_newrelic_trace(operation, &callback)
-        
         self.class.trace_execution_scoped(["Moped/Node/process"]) do
           t0 = Time.now
 
           begin
             process_without_newrelic_trace(operation, &callback)
           ensure
-            NewRelic::Agent.instance.transaction_sampler.notice_nosql(operation.log_inspect, (Time.now - t0).to_f) 
+            elapsed_time = (Time.now - t0).to_f
+            NewRelic::Agent.instance.transaction_sampler.notice_sql(operation.log_inspect,
+                                                     nil, elapsed_time)
+            NewRelic::Agent.instance.sql_sampler.notice_sql(operation.log_inspect, nil,
+                                                     nil, elapsed_time)
           end
         end
       end
