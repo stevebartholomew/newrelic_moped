@@ -12,7 +12,8 @@ DependencyDetection.defer do
   executes do
     Moped::Node.class_eval do
       def process_with_newrelic_trace(operation, &callback)
-        self.class.trace_execution_scoped(["Moped/Node/process"]) do
+        collection = operation.collection
+        self.class.trace_execution_scoped(["Moped::process[#{collection}]"]) do
           t0 = Time.now
 
           begin
