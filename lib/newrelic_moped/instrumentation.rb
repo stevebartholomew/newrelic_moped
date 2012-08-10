@@ -1,3 +1,5 @@
+require 'new_relic/agent/method_tracer'
+
 DependencyDetection.defer do
   @name = :moped
 
@@ -12,19 +14,21 @@ DependencyDetection.defer do
   executes do
     Moped::Node.class_eval do
       def process_with_newrelic_trace(operation, &callback)
-        collection = operation.collection
+        if operation.respond_to?(:collection)
+          collection = operation.collection
 
-        self.class.trace_execution_scoped(["Moped::process[#{collection}]"]) do
-          t0 = Time.now
+          self.class.trace_execution_scoped(["Moped::process[#{collection}]"]) do
+            t0 = Time.now
 
-          begin
-            process_without_newrelic_trace(operation, &callback)
-          ensure
-            elapsed_time = (Time.now - t0).to_f
-            NewRelic::Agent.instance.transaction_sampler.notice_sql(operation.log_inspect,
-                                                     nil, elapsed_time)
-            NewRelic::Agent.instance.sql_sampler.notice_sql(operation.log_inspect, nil,
-                                                     nil, elapsed_time)
+            begin
+              process_without_newrelic_trace(operation, &callback)
+            ensure
+              elapsed_time = (Time.now - t0).to_f
+              NewRelic::Agent.instance.transaction_sampler.notice_sql(operation.log_inspect,
+                                                       nil, elapsed_time)
+              NewRelic::Agent.instance.sql_sampler.notice_sql(operation.log_inspect, nil,
+                                                       nil, elapsed_time)
+            end
           end
         end
       end
