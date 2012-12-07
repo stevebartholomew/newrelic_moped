@@ -15,13 +15,11 @@ class TestInstrumentation < Test::Unit::TestCase
   include NewRelic::Agent::Instrumentation::ControllerInstrumentation
 
   def setup
-    DependencyDetection.detect!
     NewRelic::Agent.manual_start
     @engine = NewRelic::Agent.instance.stats_engine
     @engine.clear_stats
 
     @sampler = NewRelic::Agent.instance.transaction_sampler
-    @sampler.enable
     @sampler.reset!
     @sampler.start_builder
 
