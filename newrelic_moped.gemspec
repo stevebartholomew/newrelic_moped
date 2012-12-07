@@ -14,7 +14,7 @@ Gem::Specification.new do |gem|
   gem.name          = "newrelic_moped"
   gem.require_paths = ["lib"]
   gem.version       = NewrelicMoped::VERSION
-  gem.add_dependency 'newrelic_rpm', '~> 3.5.3.25'
+  gem.add_dependency 'newrelic_rpm', '~> 3.5.1'
   gem.add_dependency 'moped'
 
   gem.add_development_dependency 'rake'
