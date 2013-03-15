@@ -25,7 +25,7 @@ module NewRelic
     module Instrumentation
       def logging_with_newrelic_trace(operations, &blk)
         operation_name, collection = determine_operation_and_collection(operations.first)
-        log_statement = operations.first.log_inspect
+        log_statement = operations.first.log_inspect.encode("UTF-8")
 
         self.class.trace_execution_scoped("Database/#{collection}/#{operation_name}") do
           t0 = Time.now
@@ -38,7 +38,7 @@ module NewRelic
       end
 
       def determine_operation_and_collection(operation)
-        log_statement = operation.log_inspect
+        log_statement = operation.log_inspect.encode("UTF-8")
         collection = "Unknown"
         if operation.respond_to?(:collection)
           collection = operation.collection
