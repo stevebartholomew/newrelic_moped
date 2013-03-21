@@ -4,11 +4,11 @@ DependencyDetection.defer do
   @name = :moped
 
   depends_on do
-    defined?(::Moped) and not NewRelic::Control.instance['disable_moped']
+    defined?(::Moped) && !NewRelic::Control.instance['disable_moped']
   end
 
   executes do
-    NewRelic::Agent.logger.debug 'Installing Moped instrumentation'
+    NewRelic::Agent.logger.info 'Installing Moped instrumentation'
   end
 
   executes do
@@ -27,12 +27,33 @@ module NewRelic
         operation_name, collection = determine_operation_and_collection(operations.first)
         log_statement = operations.first.log_inspect.encode("UTF-8")
 
-        self.class.trace_execution_scoped("Database/#{collection}/#{operation_name}") do
+        metric = if operation_name.match(/UPDATE|CREATE/)
+                   "save"
+                 elsif operation_name == "QUERY"
+                   "find"
+                 elsif operation_name == "DELETE"
+                   "destroy"
+                 else
+                   "find"
+                 end
+
+         
+        metrics = ["ActiveRecord/all", "ActiveRecord/#{collection}/#{metric}"]
+
+        self.class.trace_execution_scoped(metrics) do
           t0 = Time.now
-          res = logging_without_newrelic_trace(operations, &blk)
-          elapsed_time = (Time.now - t0).to_f
-          NewRelic::Agent.instance.transaction_sampler.notice_sql(log_statement, nil, elapsed_time)
-          NewRelic::Agent.instance.sql_sampler.notice_sql(log_statement, nil, nil, elapsed_time)
+          res = nil
+          begin
+            res = logging_without_newrelic_trace(operations, &blk)
+          ensure
+            elapsed_time = (Time.now - t0).to_f
+
+            if operation_name != '$cmd'
+              NewRelic::Agent.instance.transaction_sampler.notice_sql(log_statement, nil, elapsed_time)
+              NewRelic::Agent.instance.sql_sampler.notice_sql(log_statement, metric, nil, elapsed_time)
+            end
+          end
+
           res
         end
       end
