@@ -27,35 +27,35 @@ module NewRelic
         operation_name, collection = determine_operation_and_collection(operations.first)
         log_statement = operations.first.log_inspect.encode("UTF-8")
 
-        metric = if operation_name.match(/UPDATE|CREATE/)
-                   "save"
-                 elsif operation_name == "QUERY"
-                   "find"
-                 elsif operation_name == "DELETE"
-                   "destroy"
-                 else
-                   "find"
+        metric = case operation_name
+                 when 'INSERT', 'UPDATE', 'CREATE'  then 'save'
+                 when 'QUERY'                       then 'find'
+                 when 'DELETE'                      then 'destroy'
+                 else 
+                   nil 
                  end
 
-         
-        metrics = ["ActiveRecord/all", "ActiveRecord/#{collection}/#{metric}"]
+        command = Proc.new { logging_without_newrelic_trace(operations, &blk) }
 
-        self.class.trace_execution_scoped(metrics) do
-          t0 = Time.now
-          res = nil
-          begin
-            res = logging_without_newrelic_trace(operations, &blk)
-          ensure
-            elapsed_time = (Time.now - t0).to_f
+        if metric
+          metrics = ["ActiveRecord/all", "ActiveRecord/#{collection}/#{metric}"]
 
-            if operation_name != '$cmd'
+          self.class.trace_execution_scoped(metrics) do
+            t0 = Time.now
+            begin
+              command.call
+            ensure
+              elapsed_time = (Time.now - t0).to_f
+
               NewRelic::Agent.instance.transaction_sampler.notice_sql(log_statement, nil, elapsed_time)
               NewRelic::Agent.instance.sql_sampler.notice_sql(log_statement, metric, nil, elapsed_time)
             end
           end
-
-          res
+        else
+          command.call
         end
+
+        res
       end
 
       def determine_operation_and_collection(operation)
