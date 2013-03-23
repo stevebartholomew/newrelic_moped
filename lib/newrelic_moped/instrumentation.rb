@@ -44,14 +44,15 @@ module NewRelic
                  end
 
         command = Proc.new { logging_without_newrelic_trace(operations, &blk) }
-
+        res = nil
+        
         if metric
           metrics = ["ActiveRecord/all", "ActiveRecord/#{collection}/#{metric}"]
 
           self.class.trace_execution_scoped(metrics) do
             t0 = Time.now
             begin
-              command.call
+              res = command.call
             ensure
               elapsed_time = (Time.now - t0).to_f
 
@@ -60,7 +61,7 @@ module NewRelic
             end
           end
         else
-          command.call
+          res = command.call
         end
 
         res
