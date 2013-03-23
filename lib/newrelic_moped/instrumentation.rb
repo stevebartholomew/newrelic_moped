@@ -4,26 +4,19 @@ DependencyDetection.defer do
   @name = :moped
 
   depends_on do
-    puts 'Checking Moped dependency'
-    should_run = defined?(::Moped) && !NewRelic::Control.instance['disable_moped']
-    puts "Checking Moped dependency -> #{should_run}"
-    should_run
+    defined?(::Moped) && !NewRelic::Control.instance['disable_moped']
   end
 
   executes do
-    puts 'Installing Moped instrumentation'
     NewRelic::Agent.logger.info 'Installing Moped instrumentation'
-    puts 'Installing Moped instrumentation'
   end
 
   executes do
-    puts "Moped Nearly Installed"
     Moped::Node.class_eval do
       include NewRelic::Moped::Instrumentation
       alias_method :logging_without_newrelic_trace, :logging
       alias_method :logging, :logging_with_newrelic_trace
     end
-    puts "Moped Installed"
   end
 end
 
@@ -31,7 +24,6 @@ module NewRelic
   module Moped
     module Instrumentation
       def logging_with_newrelic_trace(operations, &blk)
-        puts 'Logging Moped'
         operation_name, collection = determine_operation_and_collection(operations.first)
         log_statement = operations.first.log_inspect.encode("UTF-8")
 
