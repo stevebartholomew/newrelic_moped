@@ -16,6 +16,10 @@ Or install it yourself as:
 
     $ gem install newrelic_moped
 
+## News
+
+There's no official place for news & updates yet but you can follow @sbartholomew on Twitter for announcements.
+
 ## Contributing
 
 1. Fork it
