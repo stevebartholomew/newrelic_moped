@@ -29,15 +29,15 @@ module NewRelic
 
         metric = case operation_name
                  when 'INSERT', 'UPDATE', 'CREATE'  then 'save'
-                 when 'QUERY'                       then 'find'
+                 when 'QUERY', 'COUNT'              then 'find'
                  when 'DELETE'                      then 'destroy'
-                 else 
-                   nil 
+                 else
+                   nil
                  end
 
         command = Proc.new { logging_without_newrelic_trace(operations, &blk) }
         res = nil
-        
+
         if metric
           metrics = ["ActiveRecord/all", "ActiveRecord/#{collection}/#{metric}"]
 
