@@ -50,6 +50,10 @@ module NewRelic
 
               NewRelic::Agent.instance.transaction_sampler.notice_sql(log_statement, nil, elapsed_time)
               NewRelic::Agent.instance.sql_sampler.notice_sql(log_statement, metric, nil, elapsed_time)
+              metrics.each do |metric|
+                NewRelic::Agent.instance.stats_engine.get_stats_no_scope(metric).trace_call(elapsed_time)
+              end
+
             end
           end
         else
