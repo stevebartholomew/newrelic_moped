@@ -39,7 +39,7 @@ module NewRelic
         res = nil
 
         if metric
-          metrics = ["ActiveRecord/#{collection}/#{metric}","ActiveRecord/all"]
+          metrics = ["ActiveRecord/#{collection}/#{operation_name}","ActiveRecord/all"]
 
           self.class.trace_execution_scoped(metrics) do
             t0 = Time.now
