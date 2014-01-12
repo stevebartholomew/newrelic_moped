@@ -54,7 +54,7 @@ class TestInstrumentation < Test::Unit::TestCase
 end
 
 class NewRelicMopedInstrumentationTest < Test::Unit::TestCase
-  include NewRelic::Moped::Instrumentation
+  include NewRelic::Agent::Instrumentation::Moped
 
   def test_when_command_is_mapreduce
     command = MopedCommandWithCollectionFake.new("COMMAND database=my_database command={:mapreduce=>\"users\", :query=>{}}", "other_collection")
