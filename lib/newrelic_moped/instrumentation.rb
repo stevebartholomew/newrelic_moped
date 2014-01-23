@@ -31,7 +31,7 @@ module NewRelic
 
           operation = case operation_name
                    when 'INSERT', 'UPDATE', 'CREATE'  then 'save'
-                   when 'QUERY', 'COUNT'              then 'find'
+                   when 'QUERY', 'COUNT', 'GET_MORE'  then 'find'
                    when 'DELETE'                      then 'destroy'
                    else
                      nil

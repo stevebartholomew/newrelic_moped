@@ -77,6 +77,13 @@ class NewRelicMopedInstrumentationTest < Test::Unit::TestCase
     assert_equal("users", collection, "it should parse collection from statement")
   end
 
+  def test_when_command_is_get_more
+    command = MopedCommandWithCollectionFake.new("GET_MORE database=my_database collection=users limit=0 cursor_id=113473787917252684", "users")
+    operation, collection = determine_operation_and_collection(command)
+    assert_equal("GET_MORE", operation)
+    assert_equal("users", collection, "it should parse collection from statement")
+  end
+
   def test_command_when_operation_does_not_respond_to_collection
     command = MopedCommandFake.new("COMMAND database=admin command={:ismaster=>1}")
     operation, collection = determine_operation_and_collection(command)
