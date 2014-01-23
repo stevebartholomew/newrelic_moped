@@ -2,7 +2,7 @@
 require File.expand_path('../lib/newrelic_moped/version', __FILE__)
 
 Gem::Specification.new do |gem|
-  gem.authors       = ["Stephen Bartholomew"]
+  gem.authors       = ["Stephen Bartholomew", "Piotr Sokolowski"]
   gem.email         = ["stephenbartholomew@gmail.com"]
   gem.description   = %q{New Relic Instrumentation for Moped & Mongoid 3}
   gem.summary       = %q{New Relic Instrumentation for Moped & Mongoid 3}
