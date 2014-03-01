@@ -52,7 +52,6 @@ module NewRelic
 
                 NewRelic::Agent.instance.transaction_sampler.notice_sql(log_statement, nil, elapsed_time)
                 NewRelic::Agent.instance.sql_sampler.notice_sql(log_statement, metric, nil, elapsed_time)
-                NewRelic::Agent.instance.stats_engine.record_metrics(metrics, elapsed_time)
               end
             end
 
