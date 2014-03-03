@@ -16,6 +16,11 @@ Or install it yourself as:
 
     $ gem install newrelic_moped
 
+### Configuration
+
+This gem does not require any specific configuration. Please follow general newrelic_rpm gem configuration:
+https://github.com/newrelic/rpm/blob/master/newrelic.yml
+
 ## News
 
 There's no official place for news & updates yet but you can follow @sbartholomew on Twitter for announcements.
