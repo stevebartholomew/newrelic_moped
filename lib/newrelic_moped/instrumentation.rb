@@ -30,9 +30,9 @@ module NewRelic
           log_statement = operations.first.log_inspect.encode("UTF-8")
 
           operation = case operation_name
-                   when 'INSERT', 'UPDATE', 'CREATE'  then 'save'
-                   when 'QUERY', 'COUNT', 'GET_MORE'  then 'find'
-                   when 'DELETE'                      then 'destroy'
+                   when 'INSERT', 'UPDATE', 'CREATE'               then 'save'
+                   when 'QUERY', 'COUNT', 'GET_MORE', "AGGREGATE"  then 'find'
+                   when 'DELETE'                                   then 'destroy'
                    else
                      nil
                    end
@@ -75,6 +75,9 @@ module NewRelic
           elsif operation_name == 'COMMAND' && log_statement.include?(":count")
             operation_name = 'COUNT'
             collection = log_statement[/:count=>"([^"]+)/,1]
+          elsif operation_name == 'COMMAND' && log_statement.include?(":aggregate")
+            operation_name = 'AGGREGATE'
+            collection = log_statement[/:aggregate=>"([^"]+)/,1]
           end
           return operation_name, collection
         end
