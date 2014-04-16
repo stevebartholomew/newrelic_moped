@@ -56,6 +56,13 @@ end
 class NewRelicMopedInstrumentationTest < Test::Unit::TestCase
   include NewRelic::Agent::Instrumentation::Moped
 
+  def test_when_command_is_aggregate
+    command = MopedCommandWithCollectionFake.new("COMMAND database=my_database command={:aggregate=>\"users\", pipeline=>[]}", "other_collection")
+    operation, collection = determine_operation_and_collection(command)
+    assert_equal("AGGREGATE", operation)
+    assert_equal("users", collection, "it should parse collection from statement")
+  end
+
   def test_when_command_is_mapreduce
     command = MopedCommandWithCollectionFake.new("COMMAND database=my_database command={:mapreduce=>\"users\", :query=>{}}", "other_collection")
     operation, collection = determine_operation_and_collection(command)
