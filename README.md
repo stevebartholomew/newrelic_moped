@@ -1,6 +1,6 @@
 # New Relic Moped
 
-New Relic instrumentation for Moped / Mongoid 3
+New Relic instrumentation for Moped 1.x / Mongoid 3.x and Moped 2.0 / Mongoid 4.0
 
 ## Installation
 
