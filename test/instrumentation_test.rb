@@ -21,7 +21,7 @@ class TestInstrumentation < Test::Unit::TestCase
 
     @sampler = NewRelic::Agent.instance.transaction_sampler
     @sampler.reset!
-    @sampler.start_builder
+    @sampler.start_builder(NewRelic::Agent::TransactionState.tl_get)
 
     Moped::Node.class_eval do
       def logging_with_newrelic_trace(operations, &callback)
@@ -33,7 +33,7 @@ class TestInstrumentation < Test::Unit::TestCase
   end
 
   def teardown
-    @sampler.clear_builder
+    NewRelic::Agent::TransactionState.tl_get.reset
   end
 
   def test_handles_operations_with_collections
@@ -60,6 +60,13 @@ class NewRelicMopedInstrumentationTest < Test::Unit::TestCase
     command = MopedCommandWithCollectionFake.new("COMMAND database=my_database command={:aggregate=>\"users\", pipeline=>[]}", "other_collection")
     operation, collection = determine_operation_and_collection(command)
     assert_equal("AGGREGATE", operation)
+    assert_equal("users", collection, "it should parse collection from statement")
+  end
+
+  def test_when_command_is_find_and_modify
+    command = MopedCommandWithCollectionFake.new("COMMAND database=my_database command={:findAndModify=>\"users\", :query=>{\"_id\"=>\"548d12c020076592be0000a0\"}, :update=>{\"$set\"=>{\"foo\"=>\"bar\"}}}", "other_collection")
+    operation, collection = determine_operation_and_collection(command)
+    assert_equal("FIND_AND_MODIFY", operation)
     assert_equal("users", collection, "it should parse collection from statement")
   end
 
