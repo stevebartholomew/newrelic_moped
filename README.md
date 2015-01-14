@@ -16,6 +16,17 @@ Or install it yourself as:
 
     $ gem install newrelic_moped
 
+### Sinatra, Resque, Sidekiq
+
+When you don't use in Sinatra config.ru
+
+    run Rack::URLMap.new '/' => Sinatra::Application
+    
+or you would like to instrument *Moped* usage in non-Rack configurations like *Resque*, *Sidekiq* or even in *irb*, you have to be sure that *newrelic_moped* is required **before** *newrelic_rpm*
+
+    require 'newrelic_moped'
+    require 'newrelic_rpm'
+
 ### Configuration
 
 This gem does not require any specific configuration. Please follow general newrelic_rpm gem configuration:
