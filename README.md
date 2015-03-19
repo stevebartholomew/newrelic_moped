@@ -1,4 +1,4 @@
-# New Relic Moped
+# New Relic Moped [![Build Status](https://travis-ci.org/stevebartholomew/newrelic_moped.svg)](https://travis-ci.org/stevebartholomew/newrelic_moped)
 
 New Relic instrumentation for Moped (1.x, 2.0) / Mongoid (3.x, 4.0)
 
@@ -21,7 +21,7 @@ Or install it yourself as:
 When you don't use in Sinatra config.ru
 
     run Rack::URLMap.new '/' => Sinatra::Application
-    
+
 or you would like to instrument *Moped* usage in non-Rack configurations like *Resque*, *Sidekiq* or even in *irb*, you have to be sure that *newrelic_moped* is required **before** *newrelic_rpm*
 
     require 'newrelic_moped'
