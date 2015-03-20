@@ -27,4 +27,5 @@ supporting newrelic_rpm version < 3.11 !
   gem.add_dependency 'moped'
 
   gem.add_development_dependency 'rake'
+  gem.add_development_dependency 'test-unit'
 end
