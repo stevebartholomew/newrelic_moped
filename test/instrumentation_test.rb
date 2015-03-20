@@ -5,6 +5,9 @@ require 'moped'
 require File.expand_path(File.dirname(__FILE__) + '/../lib/newrelic_moped/instrumentation')
 require File.expand_path(File.dirname(__FILE__) + '/moped_command_fake')
 
+require 'newrelic_rpm'
+NewRelic::Agent.require_test_helper
+
 class FakeOpWithCollection < Struct.new(:collection, :log_inspect)
 end
 
@@ -15,41 +18,96 @@ class TestInstrumentation < Test::Unit::TestCase
   include NewRelic::Agent::Instrumentation::ControllerInstrumentation
 
   def setup
-    NewRelic::Agent.manual_start
-    @engine = NewRelic::Agent.instance.stats_engine
-    @engine.clear_stats
+    @session = Moped::Session.new([ "127.0.0.1:27017" ])
+    @session.use "newrelic_moped_test"
 
-    @sampler = NewRelic::Agent.instance.transaction_sampler
-    @sampler.reset!
-    @sampler.start_builder(NewRelic::Agent::TransactionState.tl_get)
+    NewRelic::Agent.drop_buffered_data
+  end
 
-    Moped::Node.class_eval do
-      def logging_with_newrelic_trace(operations, &callback)
-        # do nothing
+  def test_insert_generates_metrics
+    @session.with(safe: true) do |safe|
+      safe[:artists].insert(name: "Syd Vicious")
+    end
+
+    assert_metrics_recorded_exclusive(
+      [
+        'Datastore/all',
+        'Datastore/allOther',
+        'Datastore/MongoDB/all',
+        'Datastore/MongoDB/allOther',
+        'Datastore/operation/MongoDB/save',
+        'Datastore/statement/MongoDB/artists/save'
+      ]
+    )
+  end
+
+  def test_find_generates_metrics
+    NewRelic::Agent.disable_all_tracing do
+      @session.with(safe: true) do |safe|
+        safe[:artists].insert(name: "The Doubleclicks")
       end
     end
 
-    @node = Moped::Node.new("127.0.0.1:27017")
+    @session[:artists].find(name: "The Doubleclicks").first
+
+    assert_metrics_recorded_exclusive(
+      [
+        'Datastore/all',
+        'Datastore/allOther',
+        'Datastore/MongoDB/all',
+        'Datastore/MongoDB/allOther',
+        'Datastore/operation/MongoDB/find',
+        'Datastore/statement/MongoDB/artists/find'
+      ]
+    )
   end
 
-  def teardown
-    NewRelic::Agent::TransactionState.tl_get.reset
-  end
+  def test_update_generates_metrics
+    query = nil
+    NewRelic::Agent.disable_all_tracing do
+      @session.with(safe: true) do |safe|
+        safe[:artists].insert(name: "The Doubleclicks")
+      end
 
-  def test_handles_operations_with_collections
-    fake_op = FakeOpWithCollection.new([], "Fake")
-
-    assert_nothing_raised do
-      @node.logging_with_newrelic_trace(fake_op)
+      query = @session[:artists].find(name: "The Doubleclicks")
     end
+
+    query.update(instruments: { name: "Cat Piano" })
+
+    assert_metrics_recorded_exclusive(
+      [
+        'Datastore/all',
+        'Datastore/allOther',
+        'Datastore/MongoDB/all',
+        'Datastore/MongoDB/allOther',
+        'Datastore/operation/MongoDB/save',
+        'Datastore/statement/MongoDB/artists/save'
+      ]
+    )
   end
 
-  def test_ignores_operations_without_collection
-    fake_op = FakeOpWithoutCollection.new("Fake")
+  def test_remove_generates_metrics
+    query = nil
+    NewRelic::Agent.disable_all_tracing do
+      @session.with(safe: true) do |safe|
+        safe[:artists].insert(name: "The Doubleclicks")
+      end
 
-    assert_nothing_raised do
-      @node.logging_with_newrelic_trace(fake_op)
+      query = @session[:artists].find(name: "The Doubleclicks")
     end
+
+    query.remove
+
+    assert_metrics_recorded_exclusive(
+      [
+        'Datastore/all',
+        'Datastore/allOther',
+        'Datastore/MongoDB/all',
+        'Datastore/MongoDB/allOther',
+        'Datastore/operation/MongoDB/destroy',
+        'Datastore/statement/MongoDB/artists/destroy'
+      ]
+    )
   end
 end
 

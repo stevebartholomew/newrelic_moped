@@ -1,5 +1,5 @@
-require 'new_relic/agent/instrumentation/active_record_helper'
 require 'new_relic/agent/method_tracer'
+require 'new_relic/agent/datastores'
 
 DependencyDetection.defer do
   @name = :moped
@@ -41,20 +41,13 @@ module NewRelic
           res = nil
 
           if operation
-            metric = "ActiveRecord/#{collection}/#{operation}"
-            metrics = [metric] + ActiveRecordHelper.rollup_metrics_for(metric)
-            self.class.trace_execution_scoped(metrics) do
-              t0 = Time.now
-              begin
-                res = command.call
-              ensure
-                elapsed_time = (Time.now - t0).to_f
-
-                NewRelic::Agent.instance.transaction_sampler.notice_sql(log_statement, nil, elapsed_time)
-                NewRelic::Agent.instance.sql_sampler.notice_sql(log_statement, metric, nil, elapsed_time)
-              end
+            callback = Proc.new do |result, metric, elapsed|
+              NewRelic::Agent::Datastores.notice_statement(log_statement, elapsed)
             end
 
+            NewRelic::Agent::Datastores.wrap('MongoDB', operation, collection, callback) do
+              res = command.call
+            end
           else
             res = command.call
           end

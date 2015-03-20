@@ -13,17 +13,7 @@ Gem::Specification.new do |gem|
   gem.name          = "newrelic_moped"
   gem.require_paths = ["lib"]
   gem.version       = NewrelicMoped::VERSION
-  gem.post_install_message = <<-MESSAGE
-----------------
-IMPORTANT!
-
-This is the last version of newrelic_moped
-supporting newrelic_rpm version < 3.11 !
-
-----------------
-  MESSAGE
-
-  gem.add_dependency 'newrelic_rpm', '>= 3.7', '< 3.11'
+  gem.add_dependency 'newrelic_rpm', '~> 3.11'
   gem.add_dependency 'moped'
 
   gem.add_development_dependency 'rake'
