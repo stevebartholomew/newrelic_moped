@@ -7,3 +7,4 @@ rvm:
 services: mongodb
 script:
   - bundle exec rake test
+
