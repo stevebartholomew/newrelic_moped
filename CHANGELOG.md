@@ -2,6 +2,11 @@
 
 ## master (unreleased)
 
+## 1.0.0 (2015-03-24)
+
+### Improvements
+* Update to __newrelic_rpm__ 3.11 #32 (thanks @1337807)
+
 ## 0.0.13 (2015-03-20)
 
 ### Improvements

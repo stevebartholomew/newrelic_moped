@@ -2,6 +2,12 @@
 
 New Relic instrumentation for Moped (1.x, 2.0) / Mongoid (3.x, 4.0)
 
+## Important
+
+This gem is compatible only with __newrelic_rpm__ >= 3.11
+
+If you can't upgrade to __newrelic_rpm__ 3.11 or higher please use "__0.x__" branch of this gem.
+
 ## Installation
 
 Add this line to your application's Gemfile:
