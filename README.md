@@ -8,6 +8,8 @@ This gem is compatible only with __newrelic_rpm__ >= 3.11
 
 If you can't upgrade to __newrelic_rpm__ 3.11 or higher please use "__0.x__" branch of this gem.
 
+Latest release of 0.x branch is v0.0.13
+
 ## Installation
 
 Add this line to your application's Gemfile:
