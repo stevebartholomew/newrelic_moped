@@ -1,4 +1,6 @@
-# New Relic Moped [![Build Status](https://travis-ci.org/stevebartholomew/newrelic_moped.svg)](https://travis-ci.org/stevebartholomew/newrelic_moped)
+# This gem is no longer maintained.  New Relic has first party support for Mongodb: https://github.com/newrelic/nri-mongodb
+
+## New Relic Moped
 
 New Relic instrumentation for Moped (1.x, 2.0) / Mongoid (3.x, 4.0)
 
